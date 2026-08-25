@@ -1,1 +1,5 @@
-Jam's gonna start. Talk to your teammates.
+join pat rightmost
+pat: Hola
+join alvaro leftmost [mirrored="true"]
+alvaro: Caracola
+[end_timeline]

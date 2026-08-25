@@ -16,8 +16,106 @@ func _process(delta: float) -> void:
 	pass
 "
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_c1w88"]
+sky_top_color = Color(0.08235294, 0.5647059, 0.77254903, 1)
+sky_horizon_color = Color(0.6123302, 0.72516847, 0.7681292, 1)
+ground_horizon_color = Color(0.6123302, 0.72516847, 0.7681292, 1)
+
+[sub_resource type="Sky" id="Sky_r150o"]
+sky_material = SubResource("ProceduralSkyMaterial_c1w88")
+
+[sub_resource type="Environment" id="Environment_idj7w"]
+background_mode = 2
+sky = SubResource("Sky_r150o")
+ssao_enabled = true
+glow_enabled = true
+
+[sub_resource type="GDScript" id="GDScript_r150o"]
+resource_name = "Interaction"
+script/source = "extends CharacterBody3D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_g4v7s"]
+
+[sub_resource type="GDScript" id="GDScript_c1w88"]
+resource_name = "Player"
+script/source = "extends CharacterBody3D
+
+
+const SPEED = 5.0
+
+
+
+func _physics_process(delta: float) -> void:
+	# Add the gravity.
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+
+
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	var input_dir := Input.get_vector(\"ui_left\", \"ui_right\", \"ui_up\", \"ui_down\")
+	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	if direction:
+		velocity.x = direction.x * SPEED
+		velocity.z = direction.z * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.z = move_toward(velocity.z, 0, SPEED)
+
+	move_and_slide()
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yf5fn"]
+
 [node name="Main" type="Node3D" unique_id=497923351]
 script = SubResource("GDScript_g4v7s")
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=918276095]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=819138817]
+environment = SubResource("Environment_idj7w")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=96999253]
+transform = Transform3D(0.3746068, 0.6814009, -0.62877864, 0, 0.67815965, 0.7349146, 0.92718375, -0.275304, 0.25404322, 0, 0, 0)
+light_color = Color(0.95429987, 0.8397948, 0.7453735, 1)
+light_energy = 1.25
+shadow_enabled = true
+directional_shadow_max_distance = 449.0
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=651050433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 2.5)
+size = Vector3(16, 1, 24)
+
+[node name="InteractTest" type="CharacterBody3D" parent="." unique_id=685436737]
+script = SubResource("GDScript_r150o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest" unique_id=1991008991]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5712738, -4.1287193)
+shape = SubResource("CapsuleShape3D_g4v7s")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="InteractTest" unique_id=1480060548]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.565037, -4.133481)
+mesh = SubResource("CapsuleMesh_g4v7s")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=2111902108]
+script = SubResource("GDScript_c1w88")
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=918276095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.069628, 0)
+top_level = true
 current = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=730869031]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5003998, 0)
+shape = SubResource("CapsuleShape3D_yf5fn")

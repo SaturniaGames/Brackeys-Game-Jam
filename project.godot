@@ -23,6 +23,7 @@ Dialogic="*uid://ds2q0uclmolvu"
 
 directories/dch_directory={
 "alvaro": "res://alvaro.dch",
+"eljugador": "res://eljugador.dch",
 "fede": "res://fede.dch",
 "nik": "res://nik.dch",
 "pat": "res://pat.dch",
@@ -32,10 +33,13 @@ directories/dtl_directory={
 "inicio": "res://inicio.dtl",
 "timeline": "res://timeline.dtl"
 }
-layout/style_directory={}
+layout/style_directory={
+"": "res://jam.tres",
+"jam": "res://jam.tres"
+}
 glossary/default_case_sensitive=true
-layout/style_list=[]
-layout/default_style="Default"
+layout/style_list=["res://jam.tres"]
+layout/default_style="res://jam.tres"
 variables={}
 text/letter_speed=0.01
 text/initial_text_reveal_skippable=true
@@ -72,6 +76,8 @@ audio/channel_defaults={
 
 [display]
 
+window/size/viewport_width=1920
+window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
