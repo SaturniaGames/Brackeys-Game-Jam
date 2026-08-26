@@ -1,5 +1,11 @@
 [gd_scene format=3 uid="uid://br70kcu8r1q8w"]
 
+[ext_resource type="PackedScene" uid="uid://cppybt0aolqfy" path="res://3DAssets/ventana/ventana.blend" id="1_kln2b"]
+[ext_resource type="PackedScene" uid="uid://oir46qsv1eb2" path="res://3DAssets/escritorio/mesa.blend" id="2_rgh2o"]
+[ext_resource type="PackedScene" uid="uid://br8kupkc50srm" path="res://3DAssets/torrePC/torrePC.blend" id="3_pbw6q"]
+[ext_resource type="PackedScene" uid="uid://bvcovamka467r" path="res://3DAssets/monitor/monitor2.blend" id="4_pbw6q"]
+[ext_resource type="PackedScene" uid="uid://ccefu7rxgd5wd" path="res://3DAssets/raton/raton.blend" id="5_v1gob"]
+
 [sub_resource type="GDScript" id="GDScript_g4v7s"]
 resource_name = "Dialogues"
 script/source = "extends Node3D
@@ -94,10 +100,11 @@ shadow_enabled = true
 directional_shadow_max_distance = 449.0
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=651050433]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 2.5)
-size = Vector3(16, 1, 24)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -1)
+size = Vector3(16, 1, 17)
 
 [node name="InteractTest" type="CharacterBody3D" parent="." unique_id=685436737]
+transform = Transform3D(1.3076984, 0, -0.755, 0, 1.51, 0, 0.755, 0, 1.3076984, 0.06452346, 4.7683716e-07, -1.6991581)
 script = SubResource("GDScript_r150o")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest" unique_id=1991008991]
@@ -108,14 +115,31 @@ shape = SubResource("CapsuleShape3D_g4v7s")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.565037, -4.133481)
 mesh = SubResource("CapsuleMesh_g4v7s")
 
+[node name="ventana" parent="." unique_id=1969914397 instance=ExtResource("1_kln2b")]
+transform = Transform3D(5.7378404e-08, 0, -0.76, 0, 0.76, 0, 0.76, 0, 5.7378404e-08, -9.452734, 2.195234, 1.0106001)
+
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=2111902108]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.7510076)
 script = SubResource("GDScript_c1w88")
 
 [node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=918276095]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.069628, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.069628, 5.4685097)
 top_level = true
 current = true
+fov = 55.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=730869031]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5003998, 0)
 shape = SubResource("CapsuleShape3D_yf5fn")
+
+[node name="mesa" parent="." unique_id=660738229 instance=ExtResource("2_rgh2o")]
+transform = Transform3D(0.70581067, 0, -0.4075, 0, 0.815, 0, 0.4075, 0, 0.70581067, 1.4108654, 0.56909966, -4.759722)
+
+[node name="torrePC" parent="." unique_id=573884852 instance=ExtResource("3_pbw6q")]
+transform = Transform3D(0.24041751, 0, 0.51129675, 0, 0.565, 0, -0.51129675, 0, 0.24041751, 0.79746056, 2.1829228, -6.033843)
+
+[node name="monitor2" parent="." unique_id=1006042064 instance=ExtResource("4_pbw6q")]
+transform = Transform3D(0.39295, 0, 0.91955984, 0, 1, 0, -0.91955984, 0, 0.39295, 2.6483278, 2.171443, -4.3784533)
+
+[node name="raton" parent="." unique_id=1038978268 instance=ExtResource("5_v1gob")]
+transform = Transform3D(0.105, 0, 0, 0, 0.105, 0, 0, 0, 0.105, 1.3598576, 2.1106596, -5.845295)
