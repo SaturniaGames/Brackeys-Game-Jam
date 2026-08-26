@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://br70kcu8r1q8w"]
 
 [ext_resource type="PackedScene" uid="uid://cppybt0aolqfy" path="res://3DAssets/ventana/ventana.blend" id="1_kln2b"]
+[ext_resource type="Script" uid="uid://iiwkr8wndanu" path="res://Scenes/Interaction.gd" id="1_v1gob"]
 [ext_resource type="PackedScene" uid="uid://oir46qsv1eb2" path="res://3DAssets/escritorio/mesa.blend" id="2_rgh2o"]
 [ext_resource type="PackedScene" uid="uid://br8kupkc50srm" path="res://3DAssets/torrePC/torrePC.blend" id="3_pbw6q"]
 [ext_resource type="PackedScene" uid="uid://bvcovamka467r" path="res://3DAssets/monitor/monitor2.blend" id="4_pbw6q"]
@@ -10,16 +11,23 @@
 resource_name = "Dialogues"
 script/source = "extends Node3D
 
+@onready var player: CharacterBody3D = $Player
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	player.can_move = false
+	
+	Dialogic.timeline_ended.connect(_on_dialogic_finished)
 	Dialogic.start(\"inicio\")
-	pass # Replace with function body.
+	
+	
+	player.can_move = true
+	
+func _on_dialogic_finished():
+	Dialogic.timeline_ended.disconnect(_on_dialogic_finished)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
 "
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_c1w88"]
@@ -36,24 +44,12 @@ sky = SubResource("Sky_r150o")
 ssao_enabled = true
 glow_enabled = true
 
-[sub_resource type="GDScript" id="GDScript_r150o"]
-resource_name = "Interaction"
-script/source = "extends CharacterBody3D
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-"
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g4v7s"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
+size = Vector3(1, 0.8758545, 1)
 
 [sub_resource type="GDScript" id="GDScript_c1w88"]
 resource_name = "Player"
@@ -62,17 +58,23 @@ script/source = "extends CharacterBody3D
 
 const SPEED = 5.0
 
+var can_move = true
 
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
+	print(can_move)
+	
+	if not can_move:
+		return
+	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir := Input.get_vector(\"ui_left\", \"ui_right\", \"ui_up\", \"ui_down\")
+	var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Backward\")
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
 		velocity.x = direction.x * SPEED
@@ -86,6 +88,8 @@ func _physics_process(delta: float) -> void:
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yf5fn"]
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_yf5fn"]
+
 [node name="Main" type="Node3D" unique_id=497923351]
 script = SubResource("GDScript_g4v7s")
 
@@ -93,19 +97,19 @@ script = SubResource("GDScript_g4v7s")
 environment = SubResource("Environment_idj7w")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=96999253]
-transform = Transform3D(0.3746068, 0.6814009, -0.62877864, 0, 0.67815965, 0.7349146, 0.92718375, -0.275304, 0.25404322, 0, 0, 0)
-light_color = Color(0.95429987, 0.8397948, 0.7453735, 1)
-light_energy = 1.25
+transform = Transform3D(0.3426089, 0.34895048, -0.87226874, 0.15149058, 0.8957908, 0.41786286, 0.92718375, -0.27530402, 0.25404325, 0, 0, 0)
+light_color = Color(0.779291, 0.5496796, 0.34427017, 1)
+light_energy = 2.0
 shadow_enabled = true
 directional_shadow_max_distance = 449.0
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=651050433]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -1)
+use_collision = true
 size = Vector3(16, 1, 17)
 
 [node name="InteractTest" type="CharacterBody3D" parent="." unique_id=685436737]
 transform = Transform3D(1.3076984, 0, -0.755, 0, 1.51, 0, 0.755, 0, 1.3076984, 0.06452346, 4.7683716e-07, -1.6991581)
-script = SubResource("GDScript_r150o")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest" unique_id=1991008991]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5712738, -4.1287193)
@@ -115,22 +119,33 @@ shape = SubResource("CapsuleShape3D_g4v7s")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.565037, -4.133481)
 mesh = SubResource("CapsuleMesh_g4v7s")
 
+[node name="Area3D" type="Area3D" parent="InteractTest" unique_id=172951111]
+transform = Transform3D(0.77571213, 0, -0.6310873, 0, 1.000001, 0, 0.6310873, 0, 0.77571213, -0.9946835, 1.180801, -3.7614388)
+collision_layer = 2
+script = ExtResource("1_v1gob")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest/Area3D" unique_id=2081080247]
+transform = Transform3D(2.56, 0, 1.1920929e-07, 0, 2.5599906, 0, -1.1920929e-07, 0, 2.56, 1.4331608, 0.86290836, 0.49419045)
+shape = SubResource("BoxShape3D_g4v7s")
+
 [node name="ventana" parent="." unique_id=1969914397 instance=ExtResource("1_kln2b")]
 transform = Transform3D(5.7378404e-08, 0, -0.76, 0, 0.76, 0, 0.76, 0, 5.7378404e-08, -9.452734, 2.195234, 1.0106001)
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=2111902108]
+[node name="Player" type="CharacterBody3D" parent="." unique_id=2111902108]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.7510076)
 script = SubResource("GDScript_c1w88")
 
-[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=918276095]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.069628, 5.4685097)
-top_level = true
-current = true
+[node name="Camera3D" type="Camera3D" parent="Player" unique_id=918276095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.069628, -0.28249788)
 fov = 55.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=730869031]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=730869031]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5003998, 0)
 shape = SubResource("CapsuleShape3D_yf5fn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=1989909975]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4884838, 0)
+mesh = SubResource("CapsuleMesh_yf5fn")
 
 [node name="mesa" parent="." unique_id=660738229 instance=ExtResource("2_rgh2o")]
 transform = Transform3D(0.70581067, 0, -0.4075, 0, 0.815, 0, 0.4075, 0, 0.70581067, 1.4108654, 0.56909966, -4.759722)

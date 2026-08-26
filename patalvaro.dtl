@@ -1,0 +1,6 @@
+join pat rightmost
+pat: huevos XD
+join alvaro leftmost [mirrored="true"]
+alvaro: eldiablo
+[end_timeline]
+[clear time="1.0"]
