@@ -21,10 +21,11 @@ func _ready() -> void:
 	Dialogic.start(\"inicio\")
 	
 	
-	player.can_move = true
+	
 	
 func _on_dialogic_finished():
 	Dialogic.timeline_ended.disconnect(_on_dialogic_finished)
+	player.can_move = true
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -57,9 +58,40 @@ script/source = "extends CharacterBody3D
 
 
 const SPEED = 5.0
+const SENSITIVITY = 0.003
 
 var can_move = true
+var camera_rotation_x = 0.0
 
+@onready var interaction_ray: RayCast3D = $Camera3D/InteractionRay
+@onready var camera_3d: Camera3D = $Camera3D
+@onready var interaction_label: Label = $Camera3D/InteractionLabel
+
+func _ready() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+func _input(event):
+	if event is InputEventMouseMotion and can_move:
+		rotate_y(-event.relative.x * SENSITIVITY)
+
+		camera_rotation_x -= event.relative.y * SENSITIVITY
+		camera_rotation_x = clamp(camera_rotation_x, -1.5, 1.5)
+
+		camera_3d.rotation.x = camera_rotation_x
+
+func _process(_delta):
+	if interaction_ray.is_colliding():
+		var objeto = interaction_ray.get_collider()
+
+		if objeto.has_method(\"interactuar\"):
+			interaction_label.show()
+
+			if Input.is_action_just_pressed(\"interact\"):
+				objeto.interactuar()
+		else:
+			interaction_label.hide()
+	else:
+		interaction_label.hide()
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -138,6 +170,18 @@ script = SubResource("GDScript_c1w88")
 [node name="Camera3D" type="Camera3D" parent="Player" unique_id=918276095]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.069628, -0.28249788)
 fov = 55.0
+
+[node name="InteractionRay" type="RayCast3D" parent="Player/Camera3D" unique_id=202585442]
+target_position = Vector3(0, 0, -3)
+collision_mask = 3
+collide_with_areas = true
+
+[node name="InteractionLabel" type="Label" parent="Player/Camera3D" unique_id=1981111784]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Pulsa E para hablar"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=730869031]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5003998, 0)

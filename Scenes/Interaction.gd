@@ -1,15 +1,15 @@
 extends Area3D
 
+@onready var player: CharacterBody3D = $"../../Player"
 
-func _on_mouse_entered():
-	print("Estoy apuntando al NPC")
-
-
-func _on_mouse_exited():
-	print("He dejado de apuntar al NPC")
-
-
-func _on_input_event(_camera, event, _position, _normal, _shape_idx):
-	if event is InputEventMouseButton:
-		if event.is_action_pressed("interact"):
-			Dialogic.start("patalvaro")
+func interactuar():
+	player.can_move = false
+	Dialogic.timeline_ended.connect(_on_dialogic_finished)
+	Dialogic.start("patalvaro")
+	
+	
+	
+	
+func _on_dialogic_finished():
+	Dialogic.timeline_ended.disconnect(_on_dialogic_finished)
+	player.can_move = true	
