@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://u6og0frou32f"
+path="res://.godot/imported/Main_Día1_Master.mp3-ffad556d82fc9e9f673005847645932f.mp3str"
+
+[deps]
+
+source_file="res://Musica&Assets/Banda Sonora/Main_Día1_Master.mp3"
+dest_files=["res://.godot/imported/Main_Día1_Master.mp3-ffad556d82fc9e9f673005847645932f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
