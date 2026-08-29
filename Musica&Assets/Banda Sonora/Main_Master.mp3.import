@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cooa41fovb5vw"
+path="res://.godot/imported/Main_Master.mp3-ab3b66944ff1789158a67e1ae2176e28.mp3str"
+
+[deps]
+
+source_file="res://Musica&Assets/Banda Sonora/Main_Master.mp3"
+dest_files=["res://.godot/imported/Main_Master.mp3-ab3b66944ff1789158a67e1ae2176e28.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
