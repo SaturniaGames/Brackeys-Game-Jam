@@ -14,6 +14,7 @@ func interactuar():
 	player.can_move = false
 	Dialogic.timeline_ended.connect(_on_dialogic_finished)
 	Dialogic.start("fede")
+	await Dialogic.timeline_ended
 	
 	already_interacted = true
 	
