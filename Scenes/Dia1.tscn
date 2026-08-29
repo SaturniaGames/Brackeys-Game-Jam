@@ -1,0 +1,303 @@
+[gd_scene format=3 uid="uid://br70kcu8r1q8w"]
+
+[ext_resource type="Shader" uid="uid://cu0t8xhluye2g" path="res://Scenes/Main.gdshader" id="1_po4pl"]
+[ext_resource type="Script" uid="uid://iiwkr8wndanu" path="res://Scenes/Interaction1Day1.gd" id="2_womho"]
+[ext_resource type="Script" uid="uid://ctpwns1o63qjh" path="res://Scenes/Interaction2Day1.gd" id="3_qla76"]
+[ext_resource type="Script" uid="uid://ricpnte6n2yi" path="res://Scenes/Interaction3Day1.gd" id="4_xl7ug"]
+[ext_resource type="PackedScene" uid="uid://cppybt0aolqfy" path="res://3DAssets/ventana/ventana.blend" id="5_01n43"]
+[ext_resource type="FontFile" uid="uid://dueeodlaba7ro" path="res://Fruity Kiwi.otf" id="6_m2rb5"]
+
+[sub_resource type="GDScript" id="GDScript_g4v7s"]
+resource_name = "Dialogues"
+script/source = "extends Node3D
+
+@onready var player: CharacterBody3D = $Player
+@onready var patyalvaro = $InteractTest/Area3D
+@onready var fede = $InteractTest2/Area3D
+@onready var nik = $InteractTest3/Area3D
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	player.can_move = false
+	
+	Dialogic.timeline_ended.connect(_on_dialogic_finished)
+	Dialogic.start(\"inicio\")
+	
+func _process(delta):
+	if patyalvaro.already_interacted and fede.already_interacted and nik.already_interacted:
+		get_tree().change_scene_to_file(\"res://Dia2.tscn\")	
+	
+	
+func _on_dialogic_finished():
+	Dialogic.timeline_ended.disconnect(_on_dialogic_finished)
+	player.can_move = true
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+"
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_c1w88"]
+sky_top_color = Color(0.08235294, 0.5647059, 0.77254903, 1)
+sky_horizon_color = Color(0.6123302, 0.72516847, 0.7681292, 1)
+ground_horizon_color = Color(0.6123302, 0.72516847, 0.7681292, 1)
+
+[sub_resource type="Sky" id="Sky_r150o"]
+sky_material = SubResource("ProceduralSkyMaterial_c1w88")
+
+[sub_resource type="Environment" id="Environment_idj7w"]
+background_mode = 2
+sky = SubResource("Sky_r150o")
+ssao_enabled = true
+glow_enabled = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kln2b"]
+render_priority = 0
+shader = ExtResource("1_po4pl")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_size = 0.03
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_g4v7s"]
+material = SubResource("ShaderMaterial_kln2b")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pbw6q"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
+size = Vector3(0.56829834, 0.8758545, 0.57470703)
+
+[sub_resource type="GDScript" id="GDScript_c1w88"]
+resource_name = "Player"
+script/source = "extends CharacterBody3D
+
+
+const SPEED = 5.0
+const SENSITIVITY = 0.00035
+
+var can_move = true
+var camera_rotation_x = 0.0
+var camera_rotation_y = 0.0
+var camera_smoothness = 6.0
+
+@onready var interaction_ray: RayCast3D = $Camera3D/InteractionRay
+@onready var camera_3d: Camera3D = $Camera3D
+@onready var interaction_label: Label = $Camera3D/InteractionLabel
+
+func _ready() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+func _input(event):
+	if event is InputEventMouseMotion and can_move:
+		# Horizontal
+		camera_rotation_y -= event.relative.x * SENSITIVITY
+		camera_rotation_y = clamp(camera_rotation_y, -0.5, 0.5)
+		rotation.y = camera_rotation_y
+		
+		# Vertical
+		camera_rotation_x -= event.relative.y * SENSITIVITY
+		camera_rotation_x = clamp(camera_rotation_x, -0.5, 0.5)
+		camera_3d.rotation.x = camera_rotation_x
+
+var objeto_anterior = null
+
+func _process(_delta):
+	var objeto_actual = null
+
+	# Comprobamos qué estamos mirando
+	if interaction_ray.is_colliding():
+		var objeto = interaction_ray.get_collider()
+
+		if objeto.has_method(\"interactuar\") and not objeto.already_interacted:
+			objeto_actual = objeto
+
+	# Si hemos cambiado de objeto
+	if objeto_anterior != objeto_actual:
+		# Quitamos el outline del objeto anterior
+		if objeto_anterior != null:
+			objeto_anterior.quitar_destacado()
+
+		# Ponemos el outline al objeto nuevo
+		if objeto_actual != null:
+			objeto_actual.destacar()
+
+	# Mostramos u ocultamos el Label
+	if objeto_actual != null:
+		$InteractionLabel.show()
+
+		# Si pulsamos E, interactuamos
+		if Input.is_action_just_pressed(\"interact\"):
+			objeto_actual.interactuar()
+	else:
+		$InteractionLabel.hide()
+
+	# Guardamos el objeto que estamos mirando
+	objeto_anterior = objeto_actual
+
+func _physics_process(delta: float) -> void:
+	# Add the gravity.
+	print(can_move)
+	
+	if not can_move:
+		return
+	
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+
+
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	\"\"\" var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Backward\")
+	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	if direction:
+		velocity.x = direction.x * SPEED
+		velocity.z = direction.z * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.z = move_toward(velocity.z, 0, SPEED)
+\"\"\"
+	move_and_slide()
+"
+
+[sub_resource type="LabelSettings" id="LabelSettings_idj7w"]
+font = ExtResource("6_m2rb5")
+font_size = 23
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yf5fn"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_yf5fn"]
+
+[node name="Main" type="Node3D" unique_id=497923351]
+script = SubResource("GDScript_g4v7s")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=819138817]
+environment = SubResource("Environment_idj7w")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=96999253]
+transform = Transform3D(0.3426089, 0.34895048, -0.87226874, 0.15149058, 0.8957908, 0.41786286, 0.92718375, -0.27530402, 0.25404325, 0, 0, 0)
+light_color = Color(0.779291, 0.5496796, 0.34427017, 1)
+light_energy = 2.0
+shadow_enabled = true
+directional_shadow_max_distance = 449.0
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=651050433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -1.571228)
+use_collision = true
+size = Vector3(16, 1, 15.857544)
+
+[node name="InteractTest" type="CharacterBody3D" parent="." unique_id=685436737]
+transform = Transform3D(1.3076984, 0, -0.755, 0, 1.51, 0, 0.755, 0, 1.3076984, 0.06452346, 4.7683716e-07, -1.6991581)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest" unique_id=1991008991]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5712738, -4.1287193)
+shape = SubResource("CapsuleShape3D_g4v7s")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="InteractTest" unique_id=1480060548]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.565037, -4.133481)
+mesh = SubResource("CapsuleMesh_g4v7s")
+surface_material_override/0 = SubResource("StandardMaterial3D_pbw6q")
+
+[node name="Outline" type="MeshInstance3D" parent="InteractTest" unique_id=903735869]
+transform = Transform3D(1.05, 0, 0, 0, 1.05, 0, 0, 0, 1.05, 0, 1.565037, -4.133481)
+visible = false
+mesh = SubResource("CapsuleMesh_g4v7s")
+
+[node name="Area3D" type="Area3D" parent="InteractTest" unique_id=172951111]
+transform = Transform3D(0.77571213, 0, -0.6310873, 0, 1.000001, 0, 0.6310873, 0, 0.77571213, -0.9946835, 1.180801, -3.7614388)
+collision_layer = 2
+script = ExtResource("2_womho")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest/Area3D" unique_id=2081080247]
+transform = Transform3D(1.583159, 0, -2.010378, 0, 2.560142, 0, 2.009519, 0, 1.583836, 0.6454458, 0.8629087, -0.99558926)
+shape = SubResource("BoxShape3D_g4v7s")
+
+[node name="InteractTest2" type="CharacterBody3D" parent="." unique_id=76217366]
+transform = Transform3D(1.3076984, 0, -0.755, 0, 1.51, 0, 0.755, 0, 1.3076984, -10.643856, 4.7683716e-07, -1.6991581)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest2" unique_id=343108118]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5712738, -4.1287193)
+shape = SubResource("CapsuleShape3D_g4v7s")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="InteractTest2" unique_id=1626577467]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.565037, -4.133481)
+mesh = SubResource("CapsuleMesh_g4v7s")
+surface_material_override/0 = SubResource("StandardMaterial3D_pbw6q")
+
+[node name="Outline" type="MeshInstance3D" parent="InteractTest2" unique_id=1506609493]
+transform = Transform3D(1.05, 0, 0, 0, 1.05, 0, 0, 0, 1.05, 0, 1.565037, -4.133481)
+visible = false
+mesh = SubResource("CapsuleMesh_g4v7s")
+
+[node name="Area3D" type="Area3D" parent="InteractTest2" unique_id=1027584931]
+transform = Transform3D(0.77571213, 0, -0.6310873, 0, 1.000001, 0, 0.6310873, 0, 0.77571213, -0.9946835, 1.180801, -3.7614388)
+collision_layer = 2
+script = ExtResource("3_qla76")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest2/Area3D" unique_id=1746068383]
+transform = Transform3D(1.583159, 0, -2.010378, 0, 2.560142, 0, 2.009519, 0, 1.583836, 0.6454458, 0.8629087, -0.99558926)
+shape = SubResource("BoxShape3D_g4v7s")
+
+[node name="InteractTest3" type="CharacterBody3D" parent="." unique_id=1603038415]
+transform = Transform3D(1.3076984, 0, -0.755, 0, 1.51, 0, 0.755, 0, 1.3076984, -4.952305, 4.7683716e-07, -1.6991581)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest3" unique_id=302330243]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5712738, -4.1287193)
+shape = SubResource("CapsuleShape3D_g4v7s")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="InteractTest3" unique_id=944074723]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.565037, -4.133481)
+mesh = SubResource("CapsuleMesh_g4v7s")
+surface_material_override/0 = SubResource("StandardMaterial3D_pbw6q")
+
+[node name="Outline" type="MeshInstance3D" parent="InteractTest3" unique_id=476019025]
+transform = Transform3D(1.05, 0, 0, 0, 1.05, 0, 0, 0, 1.05, 0, 1.565037, -4.133481)
+visible = false
+mesh = SubResource("CapsuleMesh_g4v7s")
+
+[node name="Area3D" type="Area3D" parent="InteractTest3" unique_id=427932955]
+transform = Transform3D(0.77571213, 0, -0.6310873, 0, 1.000001, 0, 0.6310873, 0, 0.77571213, -0.9946835, 1.180801, -3.7614388)
+collision_layer = 2
+script = ExtResource("4_xl7ug")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractTest3/Area3D" unique_id=1175152797]
+transform = Transform3D(1.583159, 0, -2.010378, 0, 2.560142, 0, 2.009519, 0, 1.583836, 0.6454458, 0.8629087, -0.99558926)
+shape = SubResource("BoxShape3D_g4v7s")
+
+[node name="ventana" parent="." unique_id=1969914397 instance=ExtResource("5_01n43")]
+transform = Transform3D(5.7378404e-08, 0, -0.76, 0, 0.76, 0, 0.76, 0, 5.7378404e-08, -9.452734, 2.195234, 1.0106001)
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=2111902108]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7289938, 0, 4.169872)
+script = SubResource("GDScript_c1w88")
+
+[node name="InteractionLabel" type="Label" parent="Player" unique_id=1981111784]
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.2060001
+offset_left = 741.0
+offset_top = 169.0
+offset_right = -729.0
+offset_bottom = -813.4801
+theme_type_variation = &"HeaderLarge"
+text = "Pulsa E para hablar"
+label_settings = SubResource("LabelSettings_idj7w")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Camera3D" type="Camera3D" parent="Player" unique_id=918276095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.069628, -0.28249788)
+fov = 55.0
+
+[node name="InteractionRay" type="RayCast3D" parent="Player/Camera3D" unique_id=202585442]
+target_position = Vector3(0, 0, -14.575)
+collision_mask = 3
+collide_with_areas = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=730869031]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5003998, 0)
+shape = SubResource("CapsuleShape3D_yf5fn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=1989909975]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4884838, 0)
+mesh = SubResource("CapsuleMesh_yf5fn")
