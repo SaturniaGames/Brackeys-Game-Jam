@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://yi1nuvbi4cnf"
-path.s3tc="res://.godot/imported/fondo1.png-b787631193a0f43e123774fbb500637c.s3tc.ctex"
+uid="uid://7mhv0wo23v2o"
+path.s3tc="res://.godot/imported/zapatillas_alvaro.png-baa8a66d462f110f8383b0fc83104bf0.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://2DAssets/fondo1.png"
-dest_files=["res://.godot/imported/fondo1.png-b787631193a0f43e123774fbb500637c.s3tc.ctex"]
+source_file="res://3DAssets/alvaro/textures/zapatillas_alvaro.png"
+dest_files=["res://.godot/imported/zapatillas_alvaro.png-baa8a66d462f110f8383b0fc83104bf0.s3tc.ctex"]
 
 [params]
 

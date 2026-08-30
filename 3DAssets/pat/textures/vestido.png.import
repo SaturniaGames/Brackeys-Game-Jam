@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://yi1nuvbi4cnf"
-path.s3tc="res://.godot/imported/fondo1.png-b787631193a0f43e123774fbb500637c.s3tc.ctex"
+uid="uid://8vl3k7dp4tjl"
+path.s3tc="res://.godot/imported/vestido.png-0db25b5d901bb40293c3589e03c2d075.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://2DAssets/fondo1.png"
-dest_files=["res://.godot/imported/fondo1.png-b787631193a0f43e123774fbb500637c.s3tc.ctex"]
+source_file="res://3DAssets/pat/textures/vestido.png"
+dest_files=["res://.godot/imported/vestido.png-0db25b5d901bb40293c3589e03c2d075.s3tc.ctex"]
 
 [params]
 

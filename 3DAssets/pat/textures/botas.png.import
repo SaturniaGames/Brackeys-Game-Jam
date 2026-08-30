@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://yi1nuvbi4cnf"
-path.s3tc="res://.godot/imported/fondo1.png-b787631193a0f43e123774fbb500637c.s3tc.ctex"
+uid="uid://cx3qer1xf7yxa"
+path.s3tc="res://.godot/imported/botas.png-802c287234bdb595a139df9d690dab58.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://2DAssets/fondo1.png"
-dest_files=["res://.godot/imported/fondo1.png-b787631193a0f43e123774fbb500637c.s3tc.ctex"]
+source_file="res://3DAssets/pat/textures/botas.png"
+dest_files=["res://.godot/imported/botas.png-802c287234bdb595a139df9d690dab58.s3tc.ctex"]
 
 [params]
 

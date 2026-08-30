@@ -1,2 +1,6 @@
-Es tu primer día en la game jam de Brackeys. El tema es un poco enrevesado, notas algo de tensión en tus compañeros por decidir las mecánicas del juego. Deberías hablar con ellos...
+Es tu primer día como gamedev en Saturnia Games, has salido de estudiar de uno de los centros de arte digital más prestigiosos de Maladriz y has decidido unirte a un estudio indie para comenzar tu carrera en la industria.
+*Entras*
+audio "res://Musica&Assets/Assets/puerta.mp3"
+[wait time="3.0"]
+La habitación se nota claramente estresada, los miembros están discutiendo de fondo y se escuchan varias conversaciones - no se han percatado de tu llegada...
 [end_timeline]

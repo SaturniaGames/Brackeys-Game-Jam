@@ -15,6 +15,10 @@ script/source = "extends Node3D
 @onready var patyalvaro = $InteractTest/Area3D
 @onready var fede = $InteractTest2/Area3D
 @onready var nik = $InteractTest3/Area3D
+@onready var dia_label: Label = $CanvasLayer/DiaLabel
+@onready var fade: ColorRect = $CanvasLayer/Fade
+
+var cambio_de_dia = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -22,17 +26,41 @@ func _ready() -> void:
 	
 	Dialogic.timeline_ended.connect(_on_dialogic_finished)
 	Dialogic.start(\"inicio\")
-	
+			
 func _process(delta):
 	if patyalvaro.already_interacted and fede.already_interacted and nik.already_interacted:
-		get_tree().change_scene_to_file(\"res://Scenes/Dia2.tscn\")	
+		if not cambio_de_dia:
+			cambio_de_dia = true
+			cambiar_de_dia()
 	
 	
 func _on_dialogic_finished():
 	Dialogic.timeline_ended.disconnect(_on_dialogic_finished)
 	player.can_move = true
+	await hacer_fadein()
+	mostrar_dia()
 
+func mostrar_dia():
+	dia_label.show()
+	await get_tree().create_timer(3.0).timeout
+	dia_label.hide()
 
+func hacer_fadeout():
+	var tween = create_tween()
+	tween.tween_property(fade, \"color:a\", 1.0, 1.0)
+	await tween.finished
+
+func hacer_fadein():
+	var tween = create_tween()
+	tween.tween_property(fade, \"color:a\", 0.0, 1.0)
+	await tween.finished
+
+func cambiar_de_dia():
+	await hacer_fadeout()
+	
+	await get_tree().create_timer(1.0).timeout
+	
+	get_tree().change_scene_to_file(\"res://Scenes/Dia2.tscn\")
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 "
 
@@ -49,6 +77,9 @@ background_mode = 2
 sky = SubResource("Sky_r150o")
 ssao_enabled = true
 glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wxydu"]
+albedo_color = Color(0.8217887, 0.82178867, 0.82178867, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 
@@ -95,7 +126,7 @@ func _input(event):
 		
 		# Vertical
 		camera_rotation_x -= event.relative.y * SENSITIVITY
-		camera_rotation_x = clamp(camera_rotation_x, -0.5, 0.5)
+		camera_rotation_x = clamp(camera_rotation_x, -0.1, 0.1)
 		camera_3d.rotation.x = camera_rotation_x
 
 var objeto_anterior = null
@@ -168,6 +199,12 @@ outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_yf5fn"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_g4v7s"]
+font = ExtResource("6_m2rb5")
+font_size = 54
+outline_size = 13
+outline_color = Color(0, 0, 0, 1)
+
 [node name="Main" type="Node3D" unique_id=497923351]
 script = SubResource("GDScript_g4v7s")
 
@@ -175,7 +212,7 @@ script = SubResource("GDScript_g4v7s")
 environment = SubResource("Environment_idj7w")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=96999253]
-transform = Transform3D(0.3426089, 0.34895048, -0.87226874, 0.15149058, 0.8957908, 0.41786286, 0.92718375, -0.27530402, 0.25404325, 0, 0, 0)
+transform = Transform3D(0.23845893, -0.08926509, -0.96704143, 0.2889075, 0.9572039, -0.017116351, 0.9271836, -0.27530402, 0.25404316, 0, 0, 0)
 light_color = Color(0.779291, 0.5496796, 0.34427017, 1)
 light_energy = 2.0
 shadow_enabled = true
@@ -185,6 +222,42 @@ directional_shadow_max_distance = 449.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -1.571228)
 use_collision = true
 size = Vector3(16, 1, 15.857544)
+material = SubResource("StandardMaterial3D_wxydu")
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="." unique_id=826693798]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 6.7337584, -1.571228)
+use_collision = true
+size = Vector3(16, 1, 15.857544)
+material = SubResource("StandardMaterial3D_wxydu")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=1733283675]
+transform = Transform3D(2.584095e-08, -1, 0, 0.8670784, 2.9802322e-08, 0, 0, 0, 1, -9.967449, 3.2927177, -1.571228)
+use_collision = true
+size = Vector3(8.405029, 1, 15.857544)
+material = SubResource("StandardMaterial3D_wxydu")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGBox3D2" unique_id=418832899]
+transform = Transform3D(3.4370967e-08, 1.1532983, 0, -1, 2.9802322e-08, 0, 0, 0, 1, 0.5041919, -0.028211594, -0.7041757)
+operation = 2
+size = Vector3(1.2900391, 2.9046173, 3.8204632)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="." unique_id=1406116737]
+transform = Transform3D(-1.1295438e-15, 4.371139e-08, -1, 0.8670784, 2.9802322e-08, 0, 2.584095e-08, -1, -4.371139e-08, -2.2066808, 3.2927177, -9.884493)
+use_collision = true
+size = Vector3(8.405029, 1, 17.569397)
+material = SubResource("StandardMaterial3D_wxydu")
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="." unique_id=897374230]
+transform = Transform3D(-1.1295438e-15, 4.371139e-08, -1, 0.8670784, 2.9802322e-08, 0, 2.584095e-08, -1, -4.371139e-08, -2.2066808, 3.2927177, 5.857753)
+use_collision = true
+size = Vector3(8.405029, 1, 17.569397)
+material = SubResource("StandardMaterial3D_wxydu")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="." unique_id=292471156]
+transform = Transform3D(-2.584095e-08, 1, 8.742278e-08, 0.8670784, 2.9802322e-08, -1.0587911e-22, -2.2590877e-15, 8.742278e-08, -1, 6.975186, 3.2927177, -1.4691515)
+use_collision = true
+size = Vector3(8.405029, 1, 15.840851)
+material = SubResource("StandardMaterial3D_wxydu")
 
 [node name="InteractTest" type="CharacterBody3D" parent="." unique_id=685436737]
 transform = Transform3D(1.3076984, 0, -0.755, 0, 1.51, 0, 0.755, 0, 1.3076984, 0.06452346, 4.7683716e-07, -1.6991581)
@@ -265,13 +338,14 @@ transform = Transform3D(1.583159, 0, -2.010378, 0, 2.560142, 0, 2.009519, 0, 1.5
 shape = SubResource("BoxShape3D_g4v7s")
 
 [node name="ventana" parent="." unique_id=1969914397 instance=ExtResource("5_01n43")]
-transform = Transform3D(5.7378404e-08, 0, -0.76, 0, 0.76, 0, 0.76, 0, 5.7378404e-08, -9.452734, 2.195234, 1.0106001)
+transform = Transform3D(5.7378404e-08, 0, -0.76, 0, 0.76, 0, 0.76, 0, 5.7378404e-08, -9.452734, 2.195234, -2.2906084)
 
 [node name="Player" type="CharacterBody3D" parent="." unique_id=2111902108]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7289938, 0, 4.169872)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7289938, 0.03556013, 4.169872)
 script = SubResource("GDScript_c1w88")
 
 [node name="InteractionLabel" type="Label" parent="Player" unique_id=1981111784]
+visibility_layer = 2
 anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.2060001
@@ -286,7 +360,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Camera3D" type="Camera3D" parent="Player" unique_id=918276095]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.069628, -0.28249788)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4864938, -0.28249788)
 fov = 55.0
 
 [node name="InteractionRay" type="RayCast3D" parent="Player/Camera3D" unique_id=202585442]
@@ -295,9 +369,34 @@ collision_mask = 3
 collide_with_areas = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=730869031]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5003998, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5003998, 0.64308834)
 shape = SubResource("CapsuleShape3D_yf5fn")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=1989909975]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4884838, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4884838, 0.64308834)
 mesh = SubResource("CapsuleMesh_yf5fn")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1561348845]
+layer = 0
+
+[node name="DiaLabel" type="Label" parent="CanvasLayer" unique_id=897795404]
+visible = false
+anchors_preset = -1
+anchor_right = 1.001
+anchor_bottom = 1.0
+offset_top = -358.0
+offset_right = 0.079956055
+offset_bottom = -355.0
+text = "Día 1"
+label_settings = SubResource("LabelSettings_g4v7s")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Fade" type="ColorRect" parent="CanvasLayer" unique_id=1400763743]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
