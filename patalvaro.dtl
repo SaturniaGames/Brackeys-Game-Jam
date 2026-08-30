@@ -1,6 +1,18 @@
 join pat rightmost
-pat: huevos XD
+pat: El cilindro del tocadiscos más a la derecha.
 join alvaro leftmost [mirrored="true"]
-alvaro: eldiablo
+alvaro: ¡NO!, más a la izquierda.
+update pat [animation="Zoom In"]
+pat: Que non carallo, mais á dereita.
+alvaro: A ver, enséñame la referencia.
+pat: Mmmm ya bueno, si es que estaba haciendo una mezcla de varias.
+alvaro: Qué hablamos sobre eso.
+pat: Es que ninguna era como quería, a veces hay que hacer un Frankenstein ya sabes.
+alvaro: Lo siento, pero no aceptamos pulpo como animal de compañía.
+pat: Vamos no me jodas.
+alvaro: He dicho que no aceptamos pulpo como animal de compañía.
+pat: Venga ya pero que referencia ni que leches a veces hay que seguir el instinto meu. Ni siquiera es un cambio tan drástico moverlo a la derecha y queda mejor.
+alvaro: Puede salirte bien una vez pero eso no significa que pueda salirte bien siempre...
+pat: Mimimimimimimi.
 [end_timeline]
 [clear time="1.0"]
